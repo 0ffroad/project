@@ -3,72 +3,94 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bamboo SMP Status</title>
+  <title>Bamboo SMP</title>
   <style>
     body {
       font-family: 'Courier New', monospace;
-      background: url('https://i.imgur.com/4NJlDkC.png'); /* Minecraft grass bg */
+      background: url('https://i.imgur.com/O6aOcyt.png') no-repeat center center fixed;
       background-size: cover;
       color: white;
       text-align: center;
       padding: 2em;
+      margin: 0;
     }
 
     .card {
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.7);
       padding: 1.5em;
       border-radius: 10px;
-      display: inline-block;
-      margin: 1em;
+      margin: 1em auto;
+      max-width: 600px;
     }
 
-    img.avatar {
-      border-radius: 8px;
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 0.5em;
+    }
+
+    a {
+      color: #a0ffb3;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
     }
   </style>
 </head>
 <body>
 
-  <h1>🟩 Welcome to Bamboo SMP!</h1>
+  <h1>🎋 Welcome to Bamboo SMP!</h1>
+  <p>Explore, survive, and build together. Check who’s online below.</p>
 
   <div class="card">
     <h2>🌐 Server Status</h2>
     <p id="server-status">Checking...</p>
+    <ul id="player-list"></ul>
   </div>
 
   <div class="card">
-    <h2>👤 Player Avatar</h2>
-    <input type="text" id="username" placeholder="Enter Minecraft username" />
-    <button onclick="loadAvatar()">Load Avatar</button>
-    <div id="avatar-display" style="margin-top: 1em;"></div>
+    <h2>📖 About Bamboo SMP</h2>
+    <p>
+      Bamboo SMP is a friendly Minecraft survival server focused on community and creativity.
+      Whether you're building mega bases or going on adventures with friends, there's always something going on.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🖼️ Screenshots (Coming Soon!)</h2>
+    <p>We’ll share some epic builds from players soon! Stay tuned.</p>
   </div>
 
   <script>
-    // Replace with your server IP!
-    const serverIP = "139.99.22.175:25572";
+    const serverIP = "play.example.com"; // 👈 Replace with your server IP
 
-    // Check server status from MCSrvStat.us
+    // Fetch server status
     fetch(`https://api.mcsrvstat.us/2/${serverIP}`)
       .then(res => res.json())
       .then(data => {
         const statusEl = document.getElementById("server-status");
+        const playerList = document.getElementById("player-list");
+
         if (data.online) {
-          statusEl.innerHTML = `✅ Online - ${data.players.online} players online`;
+          statusEl.innerHTML = `✅ Online - ${data.players.online} player(s) online`;
+          
+          if (data.players.list && data.players.list.length > 0) {
+            data.players.list.forEach(player => {
+              const li = document.createElement("li");
+              li.textContent = player;
+              playerList.appendChild(li);
+            });
+          } else {
+            playerList.innerHTML = `<li>No players online right now.</li>`;
+          }
         } else {
-          statusEl.innerHTML = `❌ Offline`;
+          statusEl.innerHTML = `❌ Server is offline`;
         }
       })
-      .catch(err => {
-        document.getElementById("server-status").innerHTML = `Error checking status`;
-        console.error(err);
+      .catch(() => {
+        document.getElementById("server-status").innerHTML = `⚠️ Error checking status`;
       });
-
-    // Load player avatar from Minotar
-    function loadAvatar() {
-      const username = document.getElementById("username").value;
-      const display = document.getElementById("avatar-display");
-      display.innerHTML = `<img class="avatar" src="https://minotar.net/avatar/${username}/100" alt="${username}'s Avatar" />`;
-    }
   </script>
 
 </body>
