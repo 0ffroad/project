@@ -44,6 +44,7 @@
       max-width: 600px;
       width: 90%;
       text-align: center;
+      position: relative;
     }
 
     .discord {
@@ -63,53 +64,130 @@
       font-size: 1.5rem;
       margin-right: 0.5rem;
     }
+
+    .refresh {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .player-list {
+      max-height: 100px;
+      overflow: hidden;
+      transition: max-height 0.3s ease-in-out;
+    }
+
+    .player-entry {
+      display: flex;
+      align-items: center;
+      margin: 0.2rem 0;
+    }
+
+    .player-entry img {
+      width: 20px;
+      height: 20px;
+      margin-right: 0.5rem;
+    }
+
+    .view-more {
+      margin-top: 0.5rem;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
   <div class="overlay">
     <a class="discord" href="https://discord.gg/qggKXmVfZa" title="Join our Discord!" target="_blank">💬</a>
 
-    <h1>Welcome to Bamboo SMP Unofficial Website</h1>
+    <h1>Welcome to Bamboo SMP Unofficial Website </h1>
     <div class="subtitle">Explore, survive, and build together. Check who’s online below.</div>
 
     <div class="card" id="serverStatus">
-      <div><span class="emoji">🌐</span><strong>Server Status</strong></div>
+      <div>
+        <span class="emoji">🌐</span><strong>Server Status</strong>
+        <span class="refresh" onclick="checkServerStatus()">&#x21bb;</span>
+      </div>
       <p id="statusText">Checking server status...</p>
+      <div id="playerList" class="player-list"></div>
+      <div class="view-more" id="viewMore" onclick="togglePlayerList()" style="display: none;"></div>
     </div>
 
     <div class="card">
       <div><span class="emoji">📖</span><strong>About Bamboo SMP</strong></div>
       <p>
-     text
+        text
       </p>
     </div>
 
     <div class="card">
       <div><span class="emoji">🖼️</span><strong>Screenshots (Coming Soon!)</strong></div>
-      <p>We’ll share some epic builds from players soon! Stay tuned.</p>
+      <p>text</p>
     </div>
   </div>
 
   <script>
-    const serverIP = "139.99.22.175:25572"; // Change this to your actual IP or domain!
+    const serverIP = "139.99.22.175:25572"; // CHANGE THIS TO YOUR SERVER IP OR DOMAIN
     const statusText = document.getElementById("statusText");
+    const playerListContainer = document.getElementById("playerList");
+    const viewMoreBtn = document.getElementById("viewMore");
+    let fullPlayerList = [];
+    let expanded = false;
 
     async function checkServerStatus() {
+      statusText.innerText = "Checking server status...";
+      playerListContainer.innerHTML = "";
+      viewMoreBtn.style.display = "none";
+
       try {
         const res = await fetch(`https://api.mcsrvstat.us/2/${serverIP}`);
         const data = await res.json();
 
         if (!data.online) {
           statusText.innerHTML = "❌ Server is offline";
-        } else {
-          const players = data.players.online;
-          const max = data.players.max;
-          const list = data.players.list ? data.players.list.join(', ') : "No players online";
-          statusText.innerHTML = `✅ Online — ${players}/${max} players<br><small>${list}</small>`;
+          return;
         }
+
+        const online = data.players.online;
+        const max = data.players.max;
+        statusText.innerHTML = `✅ Online — ${online}/${max} players`;
+
+        fullPlayerList = data.players.list || [];
+        renderPlayerList();
       } catch (err) {
         statusText.innerText = "⚠️ Couldn't fetch server status.";
       }
+    }
+
+    function renderPlayerList() {
+      playerListContainer.innerHTML = "";
+      const maxShown = 5;
+      const toShow = expanded ? fullPlayerList : fullPlayerList.slice(0, maxShown);
+
+      toShow.forEach(name => {
+        const playerDiv = document.createElement("div");
+        playerDiv.className = "player-entry";
+        playerDiv.innerHTML = `
+          <img src="https://mc-heads.net/avatar/${name}/20" alt="${name}" />
+          ${name}
+        `;
+        playerListContainer.appendChild(playerDiv);
+      });
+
+      if (fullPlayerList.length > maxShown) {
+        viewMoreBtn.style.display = "block";
+        viewMoreBtn.innerText = expanded
+          ? `Hide extra players`
+          : `View ${fullPlayerList.length - maxShown} more players`;
+      }
+    }
+
+    function togglePlayerList() {
+      expanded = !expanded;
+      renderPlayerList();
     }
 
     checkServerStatus();
