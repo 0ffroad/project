@@ -2,95 +2,119 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bamboo SMP</title>
   <style>
     body {
-      font-family: 'Courier New', monospace;
-      background: url('https://i.imgur.com/O6aOcyt.png') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-      text-align: center;
-      padding: 2em;
       margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      background: url('bamboo-banner.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+      min-height: 100vh;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.3rem;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      text-align: center;
     }
 
     .card {
       background: rgba(0, 0, 0, 0.7);
-      padding: 1.5em;
       border-radius: 10px;
-      margin: 1em auto;
+      padding: 1.5rem;
+      margin: 1rem;
       max-width: 600px;
+      width: 90%;
+      text-align: center;
     }
 
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 0.5em;
+    .discord {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      text-decoration: none;
+      color: #fff;
+      font-size: 2rem;
     }
 
-    a {
-      color: #a0ffb3;
+    .discord:hover {
+      color: #7289da;
     }
 
-    ul {
-      list-style: none;
-      padding: 0;
+    .emoji {
+      font-size: 1.5rem;
+      margin-right: 0.5rem;
     }
   </style>
 </head>
 <body>
+  <div class="overlay">
+    <a class="discord" href="https://discord.gg/qggKXmVfZa" title="Join our Discord!" target="_blank">💬</a>
 
-  <h1>🎋 Welcome to Bamboo SMP Unofficial Website!</h1>
-  <p>Explore, survive, and build together. Check who’s online below.</p>
+    <h1>Welcome to Bamboo SMP</h1>
+    <div class="subtitle">Explore, survive, and build together. Check who’s online below.</div>
 
-  <div class="card">
-    <h2>🌐 Server Status</h2>
-    <p id="server-status">Checking...</p>
-    <ul id="player-list"></ul>
-  </div>
+    <div class="card" id="serverStatus">
+      <div><span class="emoji">🌐</span><strong>Server Status</strong></div>
+      <p id="statusText">Checking server status...</p>
+    </div>
 
-  <div class="card">
-    <h2>📖 About Bamboo SMP</h2>
-    <p>
-    test text
-    </p>
-  </div>
+    <div class="card">
+      <div><span class="emoji">📖</span><strong>About Bamboo SMP</strong></div>
+      <p>
+        Bamboo SMP is a friendly Minecraft survival server focused on community and creativity.
+        Whether you're building mega bases or going on adventures with friends, there's always
+        something going on.
+      </p>
+    </div>
 
-  <div class="card">
-    <h2>🖼️ Screenshots (Coming Soon!)</h2>
-    <p>We’ll share some epic builds from players soon! Stay tuned.</p>
+    <div class="card">
+      <div><span class="emoji">🖼️</span><strong>Screenshots (Coming Soon!)</strong></div>
+      <p>We’ll share some epic builds from players soon! Stay tuned.</p>
+    </div>
   </div>
 
   <script>
-    const serverIP = "139.99.22.175:25572"; // 👈 Replace with your server IP
+    const serverIP = "play.example.com"; // Change this to your actual IP or domain!
+    const statusText = document.getElementById("statusText");
 
-    // Fetch server status
-    fetch(`https://api.mcsrvstat.us/2/${serverIP}`)
-      .then(res => res.json())
-      .then(data => {
-        const statusEl = document.getElementById("server-status");
-        const playerList = document.getElementById("player-list");
+    async function checkServerStatus() {
+      try {
+        const res = await fetch(`https://api.mcsrvstat.us/2/${serverIP}`);
+        const data = await res.json();
 
-        if (data.online) {
-          statusEl.innerHTML = `✅ Online - ${data.players.online} player(s) online`;
-          
-          if (data.players.list && data.players.list.length > 0) {
-            data.players.list.forEach(player => {
-              const li = document.createElement("li");
-              li.textContent = player;
-              playerList.appendChild(li);
-            });
-          } else {
-            playerList.innerHTML = `<li>No players online right now.</li>`;
-          }
+        if (!data.online) {
+          statusText.innerHTML = "❌ Server is offline";
         } else {
-          statusEl.innerHTML = `❌ Server is offline`;
+          const players = data.players.online;
+          const max = data.players.max;
+          const list = data.players.list ? data.players.list.join(', ') : "No players online";
+          statusText.innerHTML = `✅ Online — ${players}/${max} players<br><small>${list}</small>`;
         }
-      })
-      .catch(() => {
-        document.getElementById("server-status").innerHTML = `⚠️ Error checking status`;
-      });
-  </script>
+      } catch (err) {
+        statusText.innerText = "⚠️ Couldn't fetch server status.";
+      }
+    }
 
+    checkServerStatus();
+  </script>
 </body>
 </html>
