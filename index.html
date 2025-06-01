@@ -196,6 +196,7 @@
       <div><span class="emoji">📖</span><strong>About Bamboo SMP</strong></div>
       <p>
        (Coming soon)
+      </p>
     </div>
 
     <div class="card">
@@ -229,6 +230,7 @@
     let fullPlayerList = [];
     let expanded = false;
     let previousPlayers = [];
+    let highlightedPlayers = new Set(); // Track players already highlighted for 30s
     let countdown = 30;
 
     function toggleSettings() {
@@ -245,12 +247,15 @@
       const toShow = expanded ? fullPlayerList : fullPlayerList.slice(0, maxShown);
 
       toShow.forEach(name => {
-        const isNew = !previousPlayers.includes(name);
+        const isNew = !previousPlayers.includes(name) && !highlightedPlayers.has(name);
         const div = document.createElement("div");
         div.className = "player-entry";
         if (isNew) {
           div.classList.add("highlight");
-          setTimeout(() => div.classList.remove("highlight"), 30000);
+          highlightedPlayers.add(name);
+          setTimeout(() => {
+            div.classList.remove("highlight");
+          }, 30000);
         }
         div.innerHTML = `<img src="https://mc-heads.net/avatar/${name}/20" />${name}`;
         playerListContainer.appendChild(div);
@@ -261,6 +266,8 @@
         viewMoreBtn.innerText = expanded
           ? `Hide extra players`
           : `View ${fullPlayerList.length - maxShown} more players`;
+      } else {
+        viewMoreBtn.style.display = "none";
       }
     }
 
