@@ -5,13 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bamboo SMP</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #fff;
-      background: url('bamboo-banner.png') no-repeat center center fixed;
+      height: 100%;
+    }
+
+    body {
+      background: url('bamboo-banner.png') center center fixed;
       background-size: cover;
+      background-attachment: fixed;
+      scroll-behavior: smooth;
     }
 
     .overlay {
@@ -97,13 +103,19 @@
       cursor: pointer;
       font-size: 0.9rem;
     }
+
+    .how-to-join {
+      margin-top: 4rem;
+      text-align: center;
+      padding-bottom: 4rem;
+    }
   </style>
 </head>
 <body>
   <div class="overlay">
     <a class="discord" href="https://discord.gg/qggKXmVfZa" title="Join our Discord!" target="_blank">💬</a>
 
-    <h1>Welcome to Bamboo SMP Unofficial Website </h1>
+    <h1>Welcome to the Bamboo SMP Unofficial Website</h1>
     <div class="subtitle">Explore, survive, and build together. Check who’s online below.</div>
 
     <div class="card" id="serverStatus">
@@ -127,10 +139,21 @@
       <div><span class="emoji">🖼️</span><strong>Screenshots (Coming Soon!)</strong></div>
       <p>text</p>
     </div>
+
+    <div class="card how-to-join" id="join">
+      <div><span class="emoji">🛠️</span><strong>How to Join Bamboo SMP</strong></div>
+      <p>
+        1. Launch Minecraft (Java).<br>
+        2. Go to Multiplayer and click Add Server.<br>
+        3. Enter Server IP: <strong>139.99.22.175:25572</strong><br>
+        4. Join and start exploring!<br><br>
+        💡 Need help? Join our <a href="https://discord.gg/qggKXmVfZa" target="_blank" style="color: #90cdf4">Discord</a> and ask in the general channel!
+      </p>
+    </div>
   </div>
 
   <script>
-    const serverIP = "139.99.22.175:25572"; // CHANGE THIS TO YOUR SERVER IP OR DOMAIN
+    const serverIP = "139.99.22.175:25572";
     const statusText = document.getElementById("statusText");
     const playerListContainer = document.getElementById("playerList");
     const viewMoreBtn = document.getElementById("viewMore");
