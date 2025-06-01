@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Welcome to the Bamboo SMP Unofficial Website</title>
-  <link rel="icon" href="favicon.ico" /> <!-- Replace with your actual favicon path -->
+  <link rel="icon" href="favicon.ico" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg-color: #000;
@@ -95,7 +96,7 @@
     }
 
     .player-list {
-      max-height: 100%;
+      max-height: 100px;
       overflow: hidden;
       transition: max-height 0.3s ease-in-out;
     }
@@ -151,6 +152,11 @@
     .settings-menu label {
       cursor: pointer;
     }
+
+    #playerGraphCard {
+      display: none;
+      margin-top: -1rem;
+    }
   </style>
 </head>
 <body>
@@ -172,23 +178,21 @@
     <div class="subtitle">Explore, survive, and build together. Check who’s online below.</div>
 
     <div class="card" id="serverStatus">
-      <div><span class="emoji">🌐</span><strong>Server Status</strong> <span class="refresh" id="refreshIcon" onclick="checkServerStatus()">&#x21bb;</span></div>
+      <div><span class="emoji">🌐</span><strong>Server Status</strong><span class="refresh" id="refreshIcon" onclick="checkServerStatus()">&#x21bb;</span></div>
       <p id="statusText">Checking server status...</p>
       <div id="playerList" class="player-list"></div>
       <div class="view-more" id="viewMore" onclick="togglePlayerList()" style="display: none;"></div>
-      <p style="font-size: 0.85rem; color: #bbb; margin-top: 0.5rem;">⚠️ Player list may be delayed or incomplete due to API limitations.</p>
       <div class="autorefresh" id="autorefresh">Automatically refreshing in 30 seconds</div>
+      <div style="margin-top: 1rem;"><button onclick="toggleGraphCard()">📈 View Player Graph</button></div>
     </div>
 
-    <div class="card">
-      <div><span class="emoji">📖</span><strong>About Bamboo SMP</strong></div>
-      <p>(Coming soon)</p>
+    <div class="card" id="playerGraphCard">
+      <div><span class="emoji">📊</span><strong>Live Player Count Graph</strong></div>
+      <canvas id="playerChart" width="400" height="200"></canvas>
     </div>
 
-    <div class="card">
-      <div><span class="emoji">🖼️</span><strong>Screenshots (Coming Soon!)</strong></div>
-      <p>(Coming soon)</p>
-    </div>
+    <div class="card"><div><span class="emoji">📖</span><strong>About Bamboo SMP</strong></div><p>(Coming soon)</p></div>
+    <div class="card"><div><span class="emoji">🖼️</span><strong>Screenshots (Coming Soon!)</strong></div><p>(Coming soon)</p></div>
 
     <div class="card how-to-join" id="join">
       <div><span class="emoji">🛠️</span><strong>How to Join Bamboo SMP</strong></div>
@@ -212,10 +216,33 @@
     const autorefreshText = document.getElementById("autorefresh");
     const themeToggle = document.getElementById("themeToggle");
     const settingsMenu = document.getElementById("settingsMenu");
+    const playerGraphCard = document.getElementById("playerGraphCard");
+    const ctx = document.getElementById("playerChart").getContext("2d");
 
     let fullPlayerList = [];
     let expanded = false;
     let countdown = 30;
+    let graphTimestamps = [];
+    let graphCounts = [];
+
+    let chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Players Online',
+          data: [],
+          borderColor: '#90cdf4',
+          fill: false
+        }]
+      },
+      options: {
+        scales: {
+          x: { title: { display: true, text: 'Time' } },
+          y: { beginAtZero: true, title: { display: true, text: 'Players' } }
+        }
+      }
+    });
 
     function toggleSettings() {
       settingsMenu.style.display = settingsMenu.style.display === "flex" ? "none" : "flex";
@@ -223,6 +250,15 @@
 
     function toggleTheme() {
       document.body.classList.toggle("light-mode");
+    }
+
+    function togglePlayerList() {
+      expanded = !expanded;
+      renderPlayerList();
+    }
+
+    function toggleGraphCard() {
+      playerGraphCard.style.display = playerGraphCard.style.display === "none" ? "block" : "none";
     }
 
     function renderPlayerList() {
@@ -247,15 +283,9 @@
       }
     }
 
-    function togglePlayerList() {
-      expanded = !expanded;
-      renderPlayerList();
-    }
-
     async function checkServerStatus() {
       refreshIcon.classList.add("spin");
       statusText.innerText = "Checking server status...";
-      viewMoreBtn.style.display = "none";
       playerListContainer.innerHTML = "";
 
       try {
@@ -272,8 +302,22 @@
         const max = data.players.max;
         fullPlayerList = data.players.list || [];
 
+        const now = new Date();
+        graphTimestamps.push(`${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`);
+        graphCounts.push(online);
+
+        if (graphTimestamps.length > 20) {
+          graphTimestamps.shift();
+          graphCounts.shift();
+        }
+
+        chart.data.labels = graphTimestamps;
+        chart.data.datasets[0].data = graphCounts;
+        chart.update();
+
         statusText.innerHTML = `✅ Online — ${online}/${max} players`;
         renderPlayerList();
+
       } catch {
         statusText.innerText = "⚠️ Couldn't fetch server status.";
       } finally {
