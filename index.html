@@ -4,14 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Welcome to the Bamboo SMP Unofficial Website</title>
-  <link rel="icon" href="favicon.ico" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="icon" href="bamboo-favicon.ico" />
   <style>
     :root {
       --bg-color: #000;
       --text-color: #fff;
       --card-bg: rgba(0, 0, 0, 0.7);
       --link-color: #90cdf4;
+      --button-bg: rgba(255, 255, 255, 0.1);
+      --button-hover-bg: rgba(255, 255, 255, 0.2);
+      --button-border: #90cdf4;
     }
 
     body.light-mode {
@@ -19,6 +21,9 @@
       --text-color: #000;
       --card-bg: rgba(255, 255, 255, 0.8);
       --link-color: #0077cc;
+      --button-bg: rgba(0, 0, 0, 0.05);
+      --button-hover-bg: rgba(0, 0, 0, 0.1);
+      --button-border: #0077cc;
     }
 
     html, body {
@@ -105,6 +110,7 @@
       display: flex;
       align-items: center;
       margin: 0.2rem 0;
+      transition: background 0.3s;
     }
 
     .player-entry img {
@@ -113,11 +119,26 @@
       margin-right: 0.5rem;
     }
 
+    /* Removed highlight styles (no yellow) */
+
     .view-more {
-      margin-top: 0.5rem;
-      color: #ccc;
+      margin-top: 0.8rem;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 1rem;
+      color: var(--text-color);
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--button-border);
+      border-radius: 8px;
+      background: var(--button-bg);
+      display: inline-block;
+      transition: background 0.3s, color 0.3s;
+      user-select: none;
+    }
+
+    .view-more:hover {
+      background: var(--button-hover-bg);
+      color: var(--link-color);
+      border-color: var(--link-color);
     }
 
     .how-to-join {
@@ -132,6 +153,7 @@
       color: var(--text-color);
     }
 
+    /* Settings Dropdown */
     .settings-menu {
       position: absolute;
       top: 2.5rem;
@@ -153,23 +175,24 @@
       cursor: pointer;
     }
 
-    #playerGraphCard {
-      display: none;
-      margin-top: -1rem;
-    }
-
-    .graph-button {
+    /* Player Graph card button */
+    #toggleGraph {
       padding: 0.5rem 1rem;
       font-size: 1rem;
-      background: transparent;
+      background: var(--button-bg);
       color: var(--text-color);
-      border: 1px solid var(--text-color);
+      border: 1px solid var(--button-border);
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s;
+      user-select: none;
+      transition: background 0.3s, color 0.3s;
+      margin-top: 1rem;
     }
-    .graph-button:hover {
-      background: rgba(255, 255, 255, 0.1);
+
+    #toggleGraph:hover {
+      background: var(--button-hover-bg);
+      color: var(--link-color);
+      border-color: var(--link-color);
     }
   </style>
 </head>
@@ -178,7 +201,10 @@
     <a class="discord" href="https://discord.gg/qggKXmVfZa" title="Join our Discord!" target="_blank">💬</a>
     <div class="settings" onclick="toggleSettings()">⚙️</div>
     <div class="settings-menu" id="settingsMenu">
-      <label><input type="checkbox" id="themeToggle" onchange="toggleTheme()" /> Toggle Light/Dark Mode</label>
+      <label>
+        <input type="checkbox" id="themeToggle" onchange="toggleTheme()" />
+        Toggle Light/Dark Mode
+      </label>
       <label for="languageSelect">Choose Language (Coming soon)</label>
       <select id="languageSelect">
         <option>English</option>
@@ -192,21 +218,33 @@
     <div class="subtitle">Explore, survive, and build together. Check who’s online below.</div>
 
     <div class="card" id="serverStatus">
-      <div><span class="emoji">🌐</span><strong>Server Status</strong><span class="refresh" id="refreshIcon" onclick="checkServerStatus()">&#x21bb;</span></div>
+      <div>
+        <span class="emoji">🌐</span><strong>Server Status</strong>
+        <span class="refresh" id="refreshIcon" onclick="checkServerStatus()">&#x21bb;</span>
+      </div>
       <p id="statusText">Checking server status...</p>
       <div id="playerList" class="player-list"></div>
       <div class="view-more" id="viewMore" onclick="togglePlayerList()" style="display: none;"></div>
       <div class="autorefresh" id="autorefresh">Automatically refreshing in 30 seconds</div>
-      <div style="margin-top: 1rem;"><button class="graph-button" onclick="toggleGraphCard()">📈 View Player Graph</button></div>
+
+      <!-- Player graph toggle button -->
+      <button id="toggleGraph">📈 View Player Graph</button>
+      <div id="graphCard" style="display:none; margin-top: 1rem;">
+        <canvas id="playerGraph" width="600" height="300"></canvas>
+      </div>
     </div>
 
-    <div class="card" id="playerGraphCard">
-      <div><span class="emoji">📊</span><strong>Live Player Count Graph</strong></div>
-      <canvas id="playerChart" width="400" height="200"></canvas>
+    <div class="card">
+      <div><span class="emoji">📖</span><strong>About Bamboo SMP</strong></div>
+      <p>
+       (Coming soon)
+      </p>
     </div>
 
-    <div class="card"><div><span class="emoji">📖</span><strong>About Bamboo SMP</strong></div><p>(Coming soon)</p></div>
-    <div class="card"><div><span class="emoji">🖼️</span><strong>Screenshots (Coming Soon!)</strong></div><p>(Coming soon)</p></div>
+    <div class="card">
+      <div><span class="emoji">🖼️</span><strong>Screenshots (Coming Soon!)</strong></div>
+      <p>(Coming soon)</p>
+    </div>
 
     <div class="card how-to-join" id="join">
       <div><span class="emoji">🛠️</span><strong>How to Join Bamboo SMP</strong></div>
@@ -221,134 +259,280 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const serverIP = "139.99.22.175:25572";
     const statusText = document.getElementById("statusText");
     const playerListContainer = document.getElementById("playerList");
-    const viewMoreBtn = document.getElementById("viewMore");
     const refreshIcon = document.getElementById("refreshIcon");
     const autorefreshText = document.getElementById("autorefresh");
-    const themeToggle = document.getElementById("themeToggle");
-    const settingsMenu = document.getElementById("settingsMenu");
-    const playerGraphCard = document.getElementById("playerGraphCard");
-    const ctx = document.getElementById("playerChart").getContext("2d");
+    const viewMoreBtn = document.getElementById("viewMore");
+    const toggleGraphBtn = document.getElementById("toggleGraph");
+    const graphCard = document.getElementById("graphCard");
+    const playerGraphCanvas = document.getElementById("playerGraph");
 
     let fullPlayerList = [];
-    let expanded = false;
+    let isExpanded = false;
     let countdown = 30;
-    let graphTimestamps = [];
-    let graphCounts = [];
+    let countdownInterval;
+    let refreshTimeout;
+    let playerCountsHistory = [];
 
-    let chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'Players Online',
-          data: [],
-          borderColor: '#90cdf4',
-          fill: false
-        }]
-      },
-      options: {
-        scales: {
-          x: { title: { display: true, text: 'Time' } },
-          y: { beginAtZero: true, title: { display: true, text: 'Players' } }
-        }
+    // For syncing across tabs using localStorage events
+    const STORAGE_KEY = "bambooSMPRefreshCountdown";
+    const STORAGE_KEY_GRAPH = "bambooSMPGraphVisible";
+
+    // Theme handling
+    const themeToggle = document.getElementById("themeToggle");
+    function loadTheme() {
+      const saved = localStorage.getItem("bambooSMPTheme");
+      if(saved === "light") {
+        document.body.classList.add("light-mode");
+        themeToggle.checked = true;
       }
-    });
-
-    function toggleSettings() {
-      settingsMenu.style.display = settingsMenu.style.display === "flex" ? "none" : "flex";
     }
-
     function toggleTheme() {
-      document.body.classList.toggle("light-mode");
+      if(themeToggle.checked) {
+        document.body.classList.add("light-mode");
+        localStorage.setItem("bambooSMPTheme", "light");
+      } else {
+        document.body.classList.remove("light-mode");
+        localStorage.setItem("bambooSMPTheme", "dark");
+      }
     }
 
-    function togglePlayerList() {
-      expanded = !expanded;
-      renderPlayerList();
+    // Settings menu toggle
+    function toggleSettings() {
+      const menu = document.getElementById("settingsMenu");
+      if(menu.style.display === "flex") {
+        menu.style.display = "none";
+      } else {
+        menu.style.display = "flex";
+      }
     }
 
-    function toggleGraphCard() {
-      playerGraphCard.style.display = playerGraphCard.style.display === "none" ? "block" : "none";
+    // Fetch server data
+    async function checkServerStatus() {
+      refreshIcon.classList.add("spin");
+      try {
+        // Using mcapi.us public API for example - adjust if you have a different source
+        const response = await fetch(`https://mcapi.us/server/status?ip=${serverIP.split(":")[0]}&port=${serverIP.split(":")[1]}`);
+        const data = await response.json();
+
+        if(data.online) {
+          statusText.textContent = `🟢 Online - ${data.players.now} player${data.players.now !== 1 ? "s" : ""} online`;
+          fullPlayerList = data.players.sample || [];
+          if(!fullPlayerList.length && data.players.now > 0) {
+            // Sometimes API returns no sample, create dummy names
+            fullPlayerList = Array.from({length:data.players.now}, (_, i) => ({name: `Player${i+1}`}));
+          }
+          renderPlayerList();
+          updateViewMoreButton();
+          updatePlayerCountHistory(data.players.now);
+        } else {
+          statusText.textContent = "🔴 Server Offline";
+          fullPlayerList = [];
+          playerListContainer.innerHTML = "";
+          viewMoreBtn.style.display = "none";
+        }
+      } catch (err) {
+        statusText.textContent = "⚠️ Unable to fetch server data";
+        console.error(err);
+      } finally {
+        refreshIcon.classList.remove("spin");
+        resetCountdown();
+      }
     }
 
+    // Render player list (collapsed or expanded)
     function renderPlayerList() {
+      const maxVisible = 5;
+      let playersToShow = isExpanded ? fullPlayerList : fullPlayerList.slice(0, maxVisible);
       playerListContainer.innerHTML = "";
-      const maxShown = 5;
-      const toShow = expanded ? fullPlayerList : fullPlayerList.slice(0, maxShown);
 
-      toShow.forEach(name => {
+      if(playersToShow.length === 0) {
+        playerListContainer.textContent = "No players online";
+        viewMoreBtn.style.display = "none";
+        return;
+      }
+
+      playersToShow.forEach(p => {
         const div = document.createElement("div");
-        div.className = "player-entry";
-        div.innerHTML = `<img src="https://mc-heads.net/avatar/${name}/20" />${name}`;
+        div.classList.add("player-entry");
+        // Using player heads from minecraft-heads.com (change if you want)
+        const img = document.createElement("img");
+        img.src = `https://mc-heads.net/avatar/${p.name}/20`;
+        img.alt = p.name;
+        div.appendChild(img);
+        div.appendChild(document.createTextNode(p.name));
         playerListContainer.appendChild(div);
       });
 
-      if (fullPlayerList.length > maxShown) {
-        viewMoreBtn.style.display = "block";
-        viewMoreBtn.innerText = expanded
-          ? `Hide extra players`
-          : `View ${fullPlayerList.length - maxShown} more players`;
+      updateViewMoreButton();
+    }
+
+    // Update view more button text and visibility
+    function updateViewMoreButton() {
+      if(fullPlayerList.length > 5) {
+        viewMoreBtn.style.display = "inline-block";
+        viewMoreBtn.textContent = isExpanded ? "View Less Players ▲" : `View More Players (${fullPlayerList.length - 5}) ▼`;
       } else {
         viewMoreBtn.style.display = "none";
       }
     }
 
-    async function checkServerStatus() {
-      refreshIcon.classList.add("spin");
-      statusText.innerText = "Checking server status...";
-      playerListContainer.innerHTML = "";
+    // Toggle player list expansion
+    function togglePlayerList() {
+      isExpanded = !isExpanded;
+      renderPlayerList();
+    }
 
-      try {
-        const res = await fetch(`https://api.mcsrvstat.us/2/${serverIP}`);
-        const data = await res.json();
+    // Countdown refresh logic with syncing
+    function resetCountdown() {
+      countdown = 30;
+      localStorage.setItem(STORAGE_KEY, countdown);
+      updateAutorefreshText();
+    }
 
-        if (!data.online) {
-          statusText.innerHTML = "❌ Server is offline";
-          refreshIcon.classList.remove("spin");
-          return;
+    function updateAutorefreshText() {
+      autorefreshText.textContent = `Automatically refreshing in ${countdown} second${countdown === 1 ? '' : 's'}`;
+    }
+
+    function startCountdown() {
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        countdown--;
+        if(countdown < 0) {
+          countdown = 30;
+          checkServerStatus();
         }
+        localStorage.setItem(STORAGE_KEY, countdown);
+        updateAutorefreshText();
+      }, 1000);
+    }
 
-        const online = data.players.online;
-        const max = data.players.max;
-        fullPlayerList = data.players.list || [];
+    // Listen for localStorage changes to sync countdown and graph toggle
+    window.addEventListener('storage', (e) => {
+      if(e.key === STORAGE_KEY && e.newValue !== null) {
+        countdown = parseInt(e.newValue, 10);
+        updateAutorefreshText();
+      }
+      if(e.key === STORAGE_KEY_GRAPH && e.newValue !== null) {
+        const visible = e.newValue === "true";
+        setGraphVisible(visible, false);
+      }
+    });
 
-        const now = new Date();
-        graphTimestamps.push(`${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`);
-        graphCounts.push(online);
-
-        if (graphTimestamps.length > 20) {
-          graphTimestamps.shift();
-          graphCounts.shift();
+    // Player count graph using Chart.js
+    const ctx = playerGraphCanvas.getContext('2d');
+    let playerChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [], // timestamps
+        datasets: [{
+          label: 'Players Online',
+          data: [],
+          borderColor: '#90cdf4',
+          backgroundColor: 'rgba(144, 205, 244, 0.3)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3,
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: false,
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              unit: 'minute',
+              tooltipFormat: 'HH:mm:ss',
+              displayFormats: {
+                minute: 'HH:mm'
+              }
+            },
+            ticks: {
+              color: 'var(--text-color)'
+            },
+            grid: {
+              color: 'rgba(255,255,255,0.1)'
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: 'var(--text-color)'
+            },
+            grid: {
+              color: 'rgba(255,255,255,0.1)'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: 'var(--text-color)'
+            }
+          }
         }
+      }
+    });
 
-        chart.data.labels = graphTimestamps;
-        chart.data.datasets[0].data = graphCounts;
-        chart.update();
+    // Add new count to history and update graph
+    function updatePlayerCountHistory(count) {
+      const now = new Date();
+      playerCountsHistory.push({time: now, count});
+      // Keep last 20 data points (about 10 minutes if 30s interval)
+      if(playerCountsHistory.length > 20) {
+        playerCountsHistory.shift();
+      }
+      updateGraph();
+    }
 
-        statusText.innerHTML = `✅ Online — ${online}/${max} players`;
-        renderPlayerList();
+    function updateGraph() {
+      playerChart.data.labels = playerCountsHistory.map(item => item.time);
+      playerChart.data.datasets[0].data = playerCountsHistory.map(item => item.count);
+      playerChart.update();
+    }
 
-      } catch {
-        statusText.innerText = "⚠️ Couldn't fetch server status.";
-      } finally {
-        refreshIcon.classList.remove("spin");
-        countdown = 30;
+    // Toggle graph card visibility
+    function setGraphVisible(visible, save=true) {
+      graphCard.style.display = visible ? "block" : "none";
+      toggleGraphBtn.textContent = visible ? "📉 Hide Player Graph" : "📈 View Player Graph";
+      if(save) {
+        localStorage.setItem(STORAGE_KEY_GRAPH, visible);
       }
     }
 
-    setInterval(() => {
-      countdown--;
-      autorefreshText.textContent = `Automatically refreshing in ${countdown} seconds`;
-      if (countdown <= 0) {
-        checkServerStatus();
-      }
-    }, 1000);
+    toggleGraphBtn.addEventListener("click", () => {
+      const newState = graphCard.style.display !== "block";
+      setGraphVisible(newState);
+    });
 
-    checkServerStatus();
+    // Initialize page
+    function init() {
+      loadTheme();
+      checkServerStatus();
+      startCountdown();
+
+      // Restore graph visibility from localStorage
+      const savedGraphVisible = localStorage.getItem(STORAGE_KEY_GRAPH);
+      if(savedGraphVisible !== null) {
+        setGraphVisible(savedGraphVisible === "true", false);
+      }
+    }
+
+    init();
+
+    // Close settings menu if clicking outside
+    document.addEventListener('click', e => {
+      const settingsMenu = document.getElementById("settingsMenu");
+      const settingsBtn = document.querySelector(".settings");
+      if(settingsMenu.style.display === "flex" && !settingsMenu.contains(e.target) && e.target !== settingsBtn) {
+        settingsMenu.style.display = "none";
+      }
+    });
   </script>
 </body>
 </html>
