@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to the Bamboo SMP Unofficial Website</title>
-  <link rel="icon" href="favicon.png" type="image/png" />
   <style>
     html, body {
       margin: 0;
@@ -12,13 +11,13 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #fff;
       height: 100%;
-      scroll-behavior: smooth;
     }
 
     body {
       background: url('bamboo-banner.png') center center fixed;
       background-size: cover;
       background-attachment: fixed;
+      scroll-behavior: smooth;
     }
 
     .overlay {
@@ -28,6 +27,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: flex-start;
     }
 
     h1 {
@@ -79,17 +79,16 @@
       font-size: 1.2rem;
     }
 
+    .refresh-timer {
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+      color: #ccc;
+    }
+
     .player-list {
+      max-height: 100px;
       overflow: hidden;
       transition: max-height 0.3s ease-in-out;
-    }
-
-    .player-list.collapsed {
-      max-height: 100px;
-    }
-
-    .player-list.expanded {
-      max-height: 500px;
     }
 
     .player-entry {
@@ -128,23 +127,26 @@
     <div class="card" id="serverStatus">
       <div>
         <span class="emoji">🌐</span><strong>Server Status</strong>
-        <span class="refresh" onclick="checkServerStatus()">&#x21bb;</span>
+        <span class="refresh" onclick="manualRefresh()">&#x21bb;</span>
       </div>
       <p id="statusText">Checking server status...</p>
-      <div id="playerList" class="player-list collapsed"></div>
+      <div id="refreshTimer" class="refresh-timer">Automatically refreshing in 30 seconds</div>
+      <div id="playerList" class="player-list"></div>
       <div class="view-more" id="viewMore" onclick="togglePlayerList()" style="display: none;"></div>
     </div>
 
     <div class="card">
       <div><span class="emoji">📖</span><strong>About Bamboo SMP</strong></div>
       <p>
-        (Coming soon)
+        Bamboo SMP is a friendly Minecraft survival server focused on community and creativity.
+        Whether you're building mega bases or going on adventures with friends, there's always
+        something going on.
       </p>
     </div>
 
     <div class="card">
       <div><span class="emoji">🖼️</span><strong>Screenshots (Coming Soon!)</strong></div>
-      <p>(Coming soon)</p>
+      <p>We’ll share some epic builds from players soon! Stay tuned.</p>
     </div>
 
     <div class="card how-to-join" id="join">
@@ -155,7 +157,7 @@
         3. Enter Server IP: <strong>139.99.22.175:25572</strong><br>
         4. Join and start exploring!<br><br>
         (Keep in mind you have to be whitelisted in order to join the server, you can get whitelisted in the #whitelist discord channel)<br><br>
-        💡<a href="https://discord.gg/qggKXmVfZa" target="_blank" style="color: #90cdf4">Join Discord here</a>
+        💡 Need help? <a href="https://discord.gg/qggKXmVfZa" target="_blank" style="color: #90cdf4">Join Discord here</a>
       </p>
     </div>
   </div>
@@ -165,20 +167,20 @@
     const statusText = document.getElementById("statusText");
     const playerListContainer = document.getElementById("playerList");
     const viewMoreBtn = document.getElementById("viewMore");
+    const refreshTimerText = document.getElementById("refreshTimer");
     let fullPlayerList = [];
     let expanded = false;
+    let countdown = 30;
 
     async function checkServerStatus() {
-      statusText.innerText = "Checking server status...";
-      playerListContainer.innerHTML = "";
-      viewMoreBtn.style.display = "none";
-
       try {
-        const res = await fetch(`https://api.mcsrvstat.us/2/${serverIP}`);
+        const res = await fetch(`https://api.mcsrvstat.us/2/${serverIP}?_=${Date.now()}`);
         const data = await res.json();
 
         if (!data.online) {
           statusText.innerHTML = "❌ Server is offline";
+          playerListContainer.innerHTML = "";
+          viewMoreBtn.style.display = "none";
           return;
         }
 
@@ -195,8 +197,6 @@
 
     function renderPlayerList() {
       playerListContainer.innerHTML = "";
-      playerListContainer.className = "player-list " + (expanded ? "expanded" : "collapsed");
-
       const maxShown = 5;
       const toShow = expanded ? fullPlayerList : fullPlayerList.slice(0, maxShown);
 
@@ -223,7 +223,24 @@
       renderPlayerList();
     }
 
+    function manualRefresh() {
+      countdown = 30;
+      checkServerStatus();
+    }
+
+    function startAutoRefresh() {
+      setInterval(() => {
+        countdown--;
+        if (countdown <= 0) {
+          countdown = 30;
+          checkServerStatus();
+        }
+        refreshTimerText.innerText = `Automatically refreshing in ${countdown} seconds`;
+      }, 1000);
+    }
+
     checkServerStatus();
+    startAutoRefresh();
   </script>
 </body>
 </html>
