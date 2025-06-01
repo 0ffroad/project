@@ -157,6 +157,20 @@
       display: none;
       margin-top: -1rem;
     }
+
+    .graph-button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background: transparent;
+      color: var(--text-color);
+      border: 1px solid var(--text-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .graph-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
   </style>
 </head>
 <body>
@@ -183,7 +197,7 @@
       <div id="playerList" class="player-list"></div>
       <div class="view-more" id="viewMore" onclick="togglePlayerList()" style="display: none;"></div>
       <div class="autorefresh" id="autorefresh">Automatically refreshing in 30 seconds</div>
-      <div style="margin-top: 1rem;"><button onclick="toggleGraphCard()">📈 View Player Graph</button></div>
+      <div style="margin-top: 1rem;"><button class="graph-button" onclick="toggleGraphCard()">📈 View Player Graph</button></div>
     </div>
 
     <div class="card" id="playerGraphCard">
