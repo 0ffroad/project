@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Welcome to the Bamboo SMP Unofficial Website</title>
+  <link rel="icon" type="image/png" href="bamboo-banner.png" />
   <style>
     html, body {
       margin: 0;
@@ -27,7 +28,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
     }
 
     h1 {
@@ -74,15 +74,9 @@
     .refresh {
       position: absolute;
       top: 1rem;
-      right: 1rem;
+      right: 2.5rem;
       cursor: pointer;
       font-size: 1.2rem;
-    }
-
-    .refresh-timer {
-      font-size: 0.85rem;
-      margin-top: 0.3rem;
-      color: #ccc;
     }
 
     .player-list {
@@ -127,12 +121,11 @@
     <div class="card" id="serverStatus">
       <div>
         <span class="emoji">🌐</span><strong>Server Status</strong>
-        <span class="refresh" onclick="manualRefresh()">&#x21bb;</span>
+        <span class="refresh" id="refreshBtn" title="Refresh">&#x21bb;</span>
       </div>
       <p id="statusText">Checking server status...</p>
-      <div id="refreshTimer" class="refresh-timer">Automatically refreshing in 30 seconds</div>
       <div id="playerList" class="player-list"></div>
-      <div class="view-more" id="viewMore" onclick="togglePlayerList()" style="display: none;"></div>
+      <div class="view-more" id="viewMore" style="display: none;"></div>
     </div>
 
     <div class="card">
@@ -167,20 +160,37 @@
     const statusText = document.getElementById("statusText");
     const playerListContainer = document.getElementById("playerList");
     const viewMoreBtn = document.getElementById("viewMore");
-    const refreshTimerText = document.getElementById("refreshTimer");
+    const refreshBtn = document.getElementById("refreshBtn");
     let fullPlayerList = [];
     let expanded = false;
-    let countdown = 30;
+    let refreshInterval = 30; // seconds
+    let countdown = refreshInterval;
+
+    function startCountdown() {
+      const interval = setInterval(() => {
+        countdown--;
+        refreshBtn.innerHTML = `&#x21bb; (${countdown}s)`;
+        if (countdown <= 0) {
+          clearInterval(interval);
+          checkServerStatus();
+          countdown = refreshInterval;
+          startCountdown(); // restart
+        }
+      }, 1000);
+    }
 
     async function checkServerStatus() {
+      statusText.innerText = "Checking server status...";
+      playerListContainer.innerHTML = "";
+      viewMoreBtn.style.display = "none";
+      refreshBtn.innerHTML = "&#x21bb;";
+
       try {
-        const res = await fetch(`https://api.mcsrvstat.us/2/${serverIP}?_=${Date.now()}`);
+        const res = await fetch(`https://api.mcsrvstat.us/2/${serverIP}?t=${Date.now()}`);
         const data = await res.json();
 
         if (!data.online) {
           statusText.innerHTML = "❌ Server is offline";
-          playerListContainer.innerHTML = "";
-          viewMoreBtn.style.display = "none";
           return;
         }
 
@@ -223,24 +233,15 @@
       renderPlayerList();
     }
 
-    function manualRefresh() {
-      countdown = 30;
+    refreshBtn.addEventListener("click", () => {
+      countdown = refreshInterval;
       checkServerStatus();
-    }
+    });
 
-    function startAutoRefresh() {
-      setInterval(() => {
-        countdown--;
-        if (countdown <= 0) {
-          countdown = 30;
-          checkServerStatus();
-        }
-        refreshTimerText.innerText = `Automatically refreshing in ${countdown} seconds`;
-      }, 1000);
-    }
+    viewMoreBtn.addEventListener("click", togglePlayerList);
 
     checkServerStatus();
-    startAutoRefresh();
+    startCountdown();
   </script>
 </body>
 </html>
