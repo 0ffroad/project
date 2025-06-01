@@ -12,13 +12,13 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #fff;
       height: 100%;
+      scroll-behavior: smooth;
     }
 
     body {
       background: url('bamboo-banner.png') center center fixed;
       background-size: cover;
       background-attachment: fixed;
-      scroll-behavior: smooth;
     }
 
     .overlay {
@@ -28,7 +28,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
     }
 
     h1 {
@@ -81,9 +80,16 @@
     }
 
     .player-list {
-      max-height: 100px;
       overflow: hidden;
       transition: max-height 0.3s ease-in-out;
+    }
+
+    .player-list.collapsed {
+      max-height: 100px;
+    }
+
+    .player-list.expanded {
+      max-height: 500px;
     }
 
     .player-entry {
@@ -125,31 +131,31 @@
         <span class="refresh" onclick="checkServerStatus()">&#x21bb;</span>
       </div>
       <p id="statusText">Checking server status...</p>
-      <div id="playerList" class="player-list"></div>
+      <div id="playerList" class="player-list collapsed"></div>
       <div class="view-more" id="viewMore" onclick="togglePlayerList()" style="display: none;"></div>
     </div>
 
     <div class="card">
       <div><span class="emoji">📖</span><strong>About Bamboo SMP</strong></div>
       <p>
-        t
+        (Coming soon)
       </p>
     </div>
 
     <div class="card">
       <div><span class="emoji">🖼️</span><strong>Screenshots (Coming Soon!)</strong></div>
-      <p>h</p>
+      <p>(Coming soon)</p>
     </div>
 
     <div class="card how-to-join" id="join">
       <div><span class="emoji">🛠️</span><strong>How to Join Bamboo SMP</strong></div>
       <p>
-        1. Launch Minecraft (Java).<br>
+        1. Launch Minecraft (Java Edition recommended).<br>
         2. Go to Multiplayer and click Add Server.<br>
         3. Enter Server IP: <strong>139.99.22.175:25572</strong><br>
         4. Join and start exploring!<br><br>
         (Keep in mind you have to be whitelisted in order to join the server, you can get whitelisted in the #whitelist discord channel)<br><br>
-        💡 <a href="https://discord.gg/qggKXmVfZa" target="_blank" style="color: #90cdf4">Join Discord here</a>
+        💡<a href="https://discord.gg/qggKXmVfZa" target="_blank" style="color: #90cdf4">Join Discord here</a>
       </p>
     </div>
   </div>
@@ -189,6 +195,8 @@
 
     function renderPlayerList() {
       playerListContainer.innerHTML = "";
+      playerListContainer.className = "player-list " + (expanded ? "expanded" : "collapsed");
+
       const maxShown = 5;
       const toShow = expanded ? fullPlayerList : fullPlayerList.slice(0, maxShown);
 
