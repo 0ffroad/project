@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Welcome to the Bamboo SMP Unofficial Website</title>
-  <link rel="icon" href="favicon.png" />
+  <link rel="icon" href="favicon.ico" /> <!-- Replace with your actual favicon path -->
   <style>
     :root {
       --bg-color: #000;
@@ -12,12 +12,14 @@
       --card-bg: rgba(0, 0, 0, 0.7);
       --link-color: #90cdf4;
     }
+
     body.light-mode {
       --bg-color: #fff;
       --text-color: #000;
       --card-bg: rgba(255, 255, 255, 0.8);
       --link-color: #0077cc;
     }
+
     html, body {
       margin: 0;
       padding: 0;
@@ -29,6 +31,7 @@
       color: var(--text-color);
       background-color: var(--bg-color);
     }
+
     .overlay {
       background-color: rgba(0, 0, 0, 0.6);
       min-height: 100vh;
@@ -37,6 +40,7 @@
       flex-direction: column;
       align-items: center;
     }
+
     .card {
       background: var(--card-bg);
       border-radius: 10px;
@@ -47,6 +51,7 @@
       text-align: center;
       position: relative;
     }
+
     .discord, .settings {
       position: absolute;
       top: 1rem;
@@ -55,67 +60,77 @@
       color: var(--text-color);
       transition: color 0.3s;
     }
+
     .discord { right: 3rem; }
     .settings { right: 1rem; cursor: pointer; }
+
     .discord:hover { color: #7289da; }
     .settings:hover { color: #aaa; }
+
     h1 {
       font-size: 3rem;
       text-align: center;
     }
+
     .subtitle {
       font-size: 1.2rem;
       margin-bottom: 2rem;
       text-align: center;
     }
+
     .emoji {
       font-size: 1.5rem;
       margin-right: 0.5rem;
     }
+
     .refresh {
       display: inline-block;
       margin-left: 0.5rem;
       cursor: pointer;
       transition: transform 0.6s ease;
     }
+
     .refresh.spin {
       transform: rotate(360deg);
     }
+
     .player-list {
-      max-height: 100px;
+      max-height: 100%;
       overflow: hidden;
       transition: max-height 0.3s ease-in-out;
     }
+
     .player-entry {
       display: flex;
       align-items: center;
       margin: 0.2rem 0;
-      transition: background 0.3s;
-      color: var(--text-color);
     }
+
     .player-entry img {
       width: 20px;
       height: 20px;
       margin-right: 0.5rem;
     }
+
     .view-more {
       margin-top: 0.5rem;
       color: #ccc;
       cursor: pointer;
       font-size: 0.9rem;
-      user-select: none;
     }
+
     .how-to-join {
       margin-top: 4rem;
       text-align: center;
       padding-bottom: 4rem;
     }
+
     .autorefresh {
       font-size: 0.9rem;
       margin-top: 0.5rem;
       color: var(--text-color);
     }
-    /* Settings Dropdown */
+
     .settings-menu {
       position: absolute;
       top: 2.5rem;
@@ -128,9 +143,11 @@
       min-width: 200px;
       z-index: 100;
     }
+
     .settings-menu select, .settings-menu label {
       margin-bottom: 0.7rem;
     }
+
     .settings-menu label {
       cursor: pointer;
     }
@@ -141,10 +158,7 @@
     <a class="discord" href="https://discord.gg/qggKXmVfZa" title="Join our Discord!" target="_blank">💬</a>
     <div class="settings" onclick="toggleSettings()">⚙️</div>
     <div class="settings-menu" id="settingsMenu">
-      <label>
-        <input type="checkbox" id="themeToggle" onchange="toggleTheme()" />
-        Toggle Light/Dark Mode
-      </label>
+      <label><input type="checkbox" id="themeToggle" onchange="toggleTheme()" /> Toggle Light/Dark Mode</label>
       <label for="languageSelect">Choose Language (Coming soon)</label>
       <select id="languageSelect">
         <option>English</option>
@@ -158,24 +172,17 @@
     <div class="subtitle">Explore, survive, and build together. Check who’s online below.</div>
 
     <div class="card" id="serverStatus">
-      <div>
-        <span class="emoji">🌐</span><strong>Server Status</strong>
-        <span class="refresh" id="refreshIcon" onclick="checkServerStatus()">&#x21bb;</span>
-      </div>
+      <div><span class="emoji">🌐</span><strong>Server Status</strong> <span class="refresh" id="refreshIcon" onclick="checkServerStatus()">&#x21bb;</span></div>
       <p id="statusText">Checking server status...</p>
       <div id="playerList" class="player-list"></div>
       <div class="view-more" id="viewMore" onclick="togglePlayerList()" style="display: none;"></div>
-<p style="font-size: 0.85rem; color: #bbb; margin-top: 0.5rem;">
-  ⚠️ Player list may be delayed or incomplete due to API limitations.
-</p>
-<div class="autorefresh" id="autorefresh">Automatically refreshing in 30 seconds</div>
+      <p style="font-size: 0.85rem; color: #bbb; margin-top: 0.5rem;">⚠️ Player list may be delayed or incomplete due to API limitations.</p>
+      <div class="autorefresh" id="autorefresh">Automatically refreshing in 30 seconds</div>
     </div>
 
     <div class="card">
       <div><span class="emoji">📖</span><strong>About Bamboo SMP</strong></div>
-      <p>
-       (Coming soon)
-      </p>
+      <p>(Coming soon)</p>
     </div>
 
     <div class="card">
@@ -186,11 +193,11 @@
     <div class="card how-to-join" id="join">
       <div><span class="emoji">🛠️</span><strong>How to Join Bamboo SMP</strong></div>
       <p>
-        1. Launch Minecraft (Java Edition recommended).<br />
-        2. Go to Multiplayer and click Add Server.<br />
-        3. Enter Server IP: <strong>139.99.22.175:25572</strong><br />
-        4. Join and start exploring!<br /><br />
-        (Keep in mind you have to be whitelisted in order to join the server, you can get whitelisted in the #whitelist discord channel)<br /><br />
+        1. Launch Minecraft (Java Edition recommended).<br>
+        2. Go to Multiplayer and click Add Server.<br>
+        3. Enter Server IP: <strong>139.99.22.175:25572</strong><br>
+        4. Join and start exploring!<br><br>
+        (Keep in mind you have to be whitelisted in order to join the server, you can get whitelisted in the #whitelist discord channel)<br><br>
         💡<a href="https://discord.gg/qggKXmVfZa" target="_blank" style="color: var(--link-color);">Join Discord here</a>
       </p>
     </div>
@@ -213,36 +220,37 @@
     function toggleSettings() {
       settingsMenu.style.display = settingsMenu.style.display === "flex" ? "none" : "flex";
     }
+
     function toggleTheme() {
       document.body.classList.toggle("light-mode");
     }
 
-function renderPlayerList() {
-  playerListContainer.innerHTML = "";
-  const maxShown = 5;
-  const toShow = expanded ? fullPlayerList : fullPlayerList.slice(0, maxShown);
+    function renderPlayerList() {
+      playerListContainer.innerHTML = "";
+      const maxShown = 5;
+      const toShow = expanded ? fullPlayerList : fullPlayerList.slice(0, maxShown);
 
-  toShow.forEach(name => {
-    const div = document.createElement("div");
-    div.className = "player-entry";
-    div.innerHTML = `<img src="https://mc-heads.net/avatar/${name}/20" />${name}`;
-    playerListContainer.appendChild(div);
-  });
+      toShow.forEach(name => {
+        const div = document.createElement("div");
+        div.className = "player-entry";
+        div.innerHTML = `<img src="https://mc-heads.net/avatar/${name}/20" />${name}`;
+        playerListContainer.appendChild(div);
+      });
 
-  if (fullPlayerList.length > maxShown) {
-    viewMoreBtn.style.display = "block";
-    viewMoreBtn.innerText = expanded
-      ? `Hide extra players`
-      : `View ${fullPlayerList.length - maxShown} more players`;
-  } else {
-    viewMoreBtn.style.display = "none";
-  }
-}
+      if (fullPlayerList.length > maxShown) {
+        viewMoreBtn.style.display = "block";
+        viewMoreBtn.innerText = expanded
+          ? `Hide extra players`
+          : `View ${fullPlayerList.length - maxShown} more players`;
+      } else {
+        viewMoreBtn.style.display = "none";
+      }
+    }
 
-function togglePlayerList() {
-  expanded = !expanded;
-  renderPlayerList();
-}
+    function togglePlayerList() {
+      expanded = !expanded;
+      renderPlayerList();
+    }
 
     async function checkServerStatus() {
       refreshIcon.classList.add("spin");
@@ -265,9 +273,8 @@ function togglePlayerList() {
         fullPlayerList = data.players.list || [];
 
         statusText.innerHTML = `✅ Online — ${online}/${max} players`;
-
         renderPlayerList();
-      } catch (err) {
+      } catch {
         statusText.innerText = "⚠️ Couldn't fetch server status.";
       } finally {
         refreshIcon.classList.remove("spin");
